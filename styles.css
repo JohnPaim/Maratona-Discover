@@ -86,6 +86,13 @@ button:hover{
     opacity: 1;
 }
 
+.input-operacao{
+    width: 50px;
+
+}
+.operacao{
+    padding-top: 5px;
+}
 
 /* HEADER----------------------------------------------------------*/
 header{

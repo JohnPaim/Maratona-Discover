@@ -61,6 +61,7 @@
                         <th>Descrição</th>
                         <th>Valor</th>
                         <th>Data</th>
+                        <th>Tipo</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -98,7 +99,12 @@
                                 name="amount"
                                 placeholder="0,00"
                             />
-                            <small class="help">Use o sinal - (negativo) para despesas e , (vírgula) para casas decimais</small>
+                            <div class="operacao">
+                                <label for="">Receita</label>
+                                <input checked class="input-operacao" type="radio" name="operacao" value="r" id="r">
+                                <label for="">Despeza</label>
+                                <input class="input-operacao" type="radio" name="operacao" value="d" id="d">
+                            </div>
                         </div>
                         <div class="input-group">
                             <label 

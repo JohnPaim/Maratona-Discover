@@ -50,7 +50,7 @@
      incomes() {
          let income = 0
          Transaction.all.forEach(transaction => {
-            if(transaction.amount > 0 ) {
+            if(transaction.type == "r" ) {
                 income += transaction.amount;
             }
 
@@ -60,7 +60,7 @@
      expenses() {
         let expense = 0
         Transaction.all.forEach(transaction => {
-           if(transaction.amount < 0 ) {
+           if(transaction.type == "d" ) {
                expense += transaction.amount;
            }
 
@@ -68,7 +68,7 @@
            return expense;
      },
      total() {
-            return Transaction.incomes() + Transaction.expenses();
+            return Transaction.incomes() - Transaction.expenses();
      }
  }
 
@@ -86,14 +86,17 @@
      },
      
      innerHTMLTransaction(transaction, index) {  
-         const CSSclass = transaction.amount > 0 ? "income" : "expense"  
+         const CSSclass = transaction.type == "r" ? "income" : "expense"  
 
          const amount = Utils.formatCurrency(transaction.amount)
+
+         const type = transaction.type == "r" ? "Receita" : "Despeza"
 
         const html = `
           <td class="description">${transaction.description}</td>
           <td class="${CSSclass}">${amount}</td>
           <td class="date">${transaction.date}</td>
+          <td class="description">${type}</td>
           <td>
          <img onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover 
          transação">
@@ -158,7 +161,9 @@
          return {
              description: Form.description.value,
              amount:Form.amount.value,
-             date:Form.date.value
+             date:Form.date.value,
+             type: getType()
+             
          }
      },
      
@@ -169,11 +174,25 @@
             date.trim() === "" ) {
                 throw new Error("Por Favor, preencha todos os campos")
             }
+
+        if(isNaN(amount)){
+            throw new Error("Valor inválido ")
+        }
+        if(amount <= 0){
+            throw new Error("O valor deve ser maior do que zero")
+        }
+
+        let data = date.replaceAll("-" , "")
+        data = parseInt(data)
+        if(isNaN(data)){
+            throw new Error("Data inválida")
+        }
+        
             
      },
 
      formatValues(){
-         let { description, amount, date } = Form.getValues()
+         let { description, amount, date, type } = Form.getValues()
 
          amount = Utils.formatAmount (amount)
 
@@ -182,7 +201,8 @@
          return{
              description,
              amount,
-             date
+             date,
+             type
          }
      },
 
@@ -203,6 +223,7 @@
          try {
              Form.validateFields()
              const transaction = Form.formatValues()
+             console.log(transaction)
              Form.saveTransaction (transaction)
              Form.clearFields()
              Modal.close()
@@ -217,7 +238,8 @@
 
 const App = {
      init() {
-        Transaction.all.forEach((transaction, index) => {
+            let transactions = Transaction.all.sort(compare)
+            transactions.forEach((transaction, index) => {
             DOM.addTransaction(transaction, index)
         })
        
@@ -233,6 +255,19 @@ const App = {
  
  App.init()
 
+ function getType(){
+ return document.querySelector('input[name="operacao"]:checked').value
+ }
+
+ function compare( a, b ) {
+    if ( a.date < b.date ){
+      return -1;
+    }
+    if ( a.date > b.date ){
+      return 1;
+    }
+    return 0;
+  }
  
  
  
